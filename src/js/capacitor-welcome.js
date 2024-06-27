@@ -1,3 +1,4 @@
+import { FirebaseFirestore } from "@capacitor-firebase/firestore";
 import { Browser } from "@capacitor/browser";
 import { SplashScreen } from "@capacitor/splash-screen";
 
@@ -17,30 +18,27 @@ window.customElements.define(
         This project is used to create a minimal, reproducible example. Just add
         the affected Capacitor platforms and plugins.
       </p>
-      <label for="myInput">Website:</label>
-      <input
-        type="text"
-        id="myInput"
-        name="myInput"
-        value="https://capacitorjs.com/"
-      />
-      <button id="open-browser">Open Browser</button>
+      <p>
+        Look at the console logs, we must receive the error in callback, but instead see an unhandled error.
+      </p>
     </main>
     `;
     }
 
     connectedCallback() {
-      const self = this;
+      FirebaseFirestore.addDocumentSnapshotListener(
+        { reference: 'doc' },
+        (data, error) => {
+          console.log('[addDocumentSnapshotListener] CALLBACK', { data, error });
+        }
+      );
 
-      self.shadowRoot
-        .querySelector("#open-browser")
-        .addEventListener("click", async function (event) {
-          const input = self.shadowRoot.getElementById("myInput").value;
-          if (!input) {
-            return;
-          }
-          await Browser.open({ url: input });
-        });
+      FirebaseFirestore.addCollectionSnapshotListener(
+        { reference: 'collection' },
+        (data, error) => {
+          console.log('[addCollectionSnapshotListener] CALLBACK', { data, error });
+        }
+      )
     }
   },
 );
